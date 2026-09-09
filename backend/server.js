@@ -42,16 +42,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-
-// Initialize Database & Server
+// Initialize database
 connectDB().then(() => {
   if (getMongoStatus()) {
     seedDB();
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Portfolio REST API Server running on port ${PORT}`);
-  console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
-});
+// Export app for Vercel
+module.exports = app;
