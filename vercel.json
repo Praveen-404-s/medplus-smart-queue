@@ -1,60 +1,10 @@
 {
-  "builds": [
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    },
-    {
-      "src": "api/main.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/health",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/services",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/tokens(.*)",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/queue",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/counters",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/seed-demo",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/docs",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/openapi.json",
-      "dest": "api/main.py"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "api/main.py"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "index.html"
+      "source": "/(.*)",
+      "destination": "/api/main.py"
     }
   ]
 }

@@ -73,6 +73,28 @@ def startup():
     finally:
         db.close()
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Locate frontend dist directory
+frontend_dist = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
+assets_dir = frontend_dist / "assets"
+
+if assets_dir.exists():
+    app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+@app.get("/")
+def serve_index():
+    index_file = frontend_dist / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    return {
+        "status": "online",
+        "service": "MedPlus Smart Queue AI FastAPI Backend Engine",
+        "version": "1.0.0"
+    }
+
 @app.get("/api")
 @app.get("/api/status")
 def root():
