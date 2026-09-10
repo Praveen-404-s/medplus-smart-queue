@@ -95,6 +95,15 @@ def serve_index():
         "version": "1.0.0"
     }
 
+from fastapi import Request
+
+@app.get("/debug-headers")
+def debug_headers(request: Request):
+    return {
+        "path": request.url.path,
+        "headers": dict(request.headers)
+    }
+
 @app.get("/api")
 @app.get("/api/status")
 def root():
