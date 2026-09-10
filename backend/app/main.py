@@ -74,6 +74,7 @@ def startup():
         db.close()
 
 @app.get("/")
+@app.get("/api")
 def root():
     return {
         "status": "online",
@@ -84,18 +85,22 @@ def root():
     }
 
 @app.get("/health")
+@app.get("/api/health")
 def health():
     return {"status": "ok"}
 
 @app.get("/services", response_model=list[ServiceOut])
+@app.get("/api/services", response_model=list[ServiceOut])
 def get_services(db: Session = Depends(get_db)):
     return db.query(Service).order_by(Service.id).all()
 
 @app.get("/tokens", response_model=list[TokenOut])
+@app.get("/api/tokens", response_model=list[TokenOut])
 def get_tokens(db: Session = Depends(get_db)):
     return db.query(Token).order_by(Token.created_at.desc()).limit(100).all()
 
 @app.get("/queue", response_model=list[TokenOut])
+@app.get("/api/queue", response_model=list[TokenOut])
 def get_queue(db: Session = Depends(get_db)):
     return (
         db.query(Token)
@@ -105,10 +110,12 @@ def get_queue(db: Session = Depends(get_db)):
     )
 
 @app.get("/counters", response_model=list[CounterOut])
+@app.get("/api/counters", response_model=list[CounterOut])
 def get_counters(db: Session = Depends(get_db)):
     return db.query(Counter).order_by(Counter.id).all()
 
 @app.post("/tokens", response_model=TokenOut)
+@app.post("/api/tokens", response_model=TokenOut)
 async def create_token(payload: TokenCreate, db: Session = Depends(get_db)):
     service = db.get(Service, payload.service_id)
     if not service:
@@ -145,6 +152,7 @@ async def create_token(payload: TokenCreate, db: Session = Depends(get_db)):
     return token
 
 @app.post("/tokens/{token_id}/call", response_model=TokenOut)
+@app.post("/api/tokens/{token_id}/call", response_model=TokenOut)
 async def call_token(token_id: int, db: Session = Depends(get_db)):
     token = db.get(Token, token_id)
     if not token:
@@ -163,6 +171,7 @@ async def call_token(token_id: int, db: Session = Depends(get_db)):
     return token
 
 @app.post("/tokens/{token_id}/complete", response_model=TokenOut)
+@app.post("/api/tokens/{token_id}/complete", response_model=TokenOut)
 async def complete_token(token_id: int, payload: CompleteRequest, db: Session = Depends(get_db)):
     token = db.get(Token, token_id)
     if not token:
@@ -189,6 +198,7 @@ async def complete_token(token_id: int, payload: CompleteRequest, db: Session = 
     return token
 
 @app.post("/seed-demo")
+@app.post("/api/seed-demo")
 async def seed_demo(db: Session = Depends(get_db)):
     services = db.query(Service).all()
     if not services:
