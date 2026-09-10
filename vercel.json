@@ -14,44 +14,39 @@
   ],
   "routes": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
       "src": "/health",
-      "dest": "/api/main.py"
+      "dest": "api/main.py"
     },
     {
       "src": "/services",
-      "dest": "/api/main.py"
+      "dest": "api/main.py"
     },
     {
       "src": "/tokens(.*)",
-      "dest": "/api/main.py"
+      "dest": "api/main.py"
     },
     {
       "src": "/queue",
-      "dest": "/api/main.py"
+      "dest": "api/main.py"
     },
     {
       "src": "/counters",
-      "dest": "/api/main.py"
+      "dest": "api/main.py"
     },
     {
       "src": "/seed-demo",
-      "dest": "/api/main.py"
+      "dest": "api/main.py"
     },
     {
       "src": "/api/(.*)",
-      "dest": "/api/main.py"
+      "dest": "api/main.py"
     },
     {
-      "src": "/$",
-      "dest": "/index.html"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "index.html"
     }
   ]
 }
