@@ -1,6 +1,7 @@
 {
   "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/health",
@@ -41,6 +42,10 @@
     {
       "source": "/api/:path*",
       "destination": "/api/index.py"
+    },
+    {
+      "source": "/((?!health|services|tokens|queue|counters|seed-demo|docs|openapi.json|api).*)",
+      "destination": "/index.html"
     }
   ]
 }
