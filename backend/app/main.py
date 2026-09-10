@@ -194,7 +194,47 @@ def health():
 
     }
 
+# --------------------------------------------------
+# RESET HEALTHCARE SERVICES
+# --------------------------------------------------
 
+@app.post("/reset-services")
+def reset_services(
+    db: Session = Depends(get_db),
+):
+
+    db.query(Token).delete()
+    db.query(Service).delete()
+    db.query(Counter).delete()
+
+    db.commit()
+
+    db.add_all([
+        Service(
+            name="General Doctor Consultation",
+            base_duration=15
+        ),
+        Service(
+            name="Radiology",
+            base_duration=25
+        ),
+        Service(
+            name="Laboratory / Blood Test",
+            base_duration=10
+        ),
+    ])
+
+    db.add_all([
+        Counter(name="OPD Room 1"),
+        Counter(name="OPD Room 2"),
+        Counter(name="OPD Room 3"),
+    ])
+
+    db.commit()
+
+    return {
+        "message": "Healthcare services reset successfully"
+    }
 # --------------------------------------------------
 # GET SERVICES
 # --------------------------------------------------
