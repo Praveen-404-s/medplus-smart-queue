@@ -39,16 +39,8 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/ws",
-      "destination": "/api/index.py"
-    },
-    {
       "source": "/api/:path*",
       "destination": "/api/index.py"
-    },
-    {
-      "source": "/((?!api|health|services|tokens|queue|counters|seed-demo|docs|openapi.json|ws).*)",
-      "destination": "/index.html"
     }
   ]
 }
