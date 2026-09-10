@@ -1,51 +1,57 @@
 {
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
-  "framework": "vite",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/health",
-      "destination": "/api/main.py"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     },
     {
-      "source": "/services",
-      "destination": "/api/main.py"
+      "src": "api/main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
-      "source": "/tokens",
-      "destination": "/api/main.py"
+      "src": "/health",
+      "dest": "/api/main.py"
     },
     {
-      "source": "/tokens/:path*",
-      "destination": "/api/main.py"
+      "src": "/services",
+      "dest": "/api/main.py"
     },
     {
-      "source": "/queue",
-      "destination": "/api/main.py"
+      "src": "/tokens(.*)",
+      "dest": "/api/main.py"
     },
     {
-      "source": "/counters",
-      "destination": "/api/main.py"
+      "src": "/queue",
+      "dest": "/api/main.py"
     },
     {
-      "source": "/seed-demo",
-      "destination": "/api/main.py"
+      "src": "/counters",
+      "dest": "/api/main.py"
     },
     {
-      "source": "/docs",
-      "destination": "/api/main.py"
+      "src": "/seed-demo",
+      "dest": "/api/main.py"
     },
     {
-      "source": "/openapi.json",
-      "destination": "/api/main.py"
+      "src": "/api/(.*)",
+      "dest": "/api/main.py"
     },
     {
-      "source": "/api/:path*",
-      "destination": "/api/main.py"
+      "src": "/$",
+      "dest": "/index.html"
     },
     {
-      "source": "/((?!health|services|tokens|queue|counters|seed-demo|docs|openapi.json|api).*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
