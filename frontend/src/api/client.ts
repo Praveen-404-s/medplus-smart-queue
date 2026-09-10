@@ -1,6 +1,10 @@
 import { Counter, Service, Token, TokenCreatePayload } from '../types/queue';
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : 'http://127.0.0.1:8000').replace(/\/$/, '');
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL !== undefined 
+    ? import.meta.env.VITE_API_URL 
+    : (import.meta.env.MODE === 'production' ? '' : 'http://127.0.0.1:8000')
+).replace(/\/$/, '');
 const WS_URL = import.meta.env.VITE_WS_URL || (
   API_BASE_URL 
     ? API_BASE_URL.replace(/^http(s?):/, 'ws$1:') + '/ws'
