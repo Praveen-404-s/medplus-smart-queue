@@ -3,8 +3,8 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/api/main.py"
+      "source": "/:path*",
+      "destination": "/api/main.py?__path=/:path*"
     }
   ]
 }
