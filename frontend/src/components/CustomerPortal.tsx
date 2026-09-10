@@ -11,19 +11,15 @@ interface CustomerPortalProps {
 }
 
 export const hospitalServiceNames: Record<string, string> = {
-  'Account Opening': 'General Doctor Consultation',
-  'Cash Deposit': 'Pharmacy & Medicine Dispatch',
-  'Cash Withdrawal': 'Laboratory & Blood Test',
-  'Loan Enquiry': 'Radiology / X-Ray / Scan',
-  'Document Verification': 'Patient Registration & Billing',
+  'General Consultation': 'General Consultation',
+  'Radiology': 'Radiology',
+  'Laboratory Test': 'Laboratory Test',
 };
 
 // Helper function to get service label based on patient triage category
 export const getCategoryServiceLabel = (serviceName: string, category: string): string => {
-  if (category === 'priority') {
-    if (serviceName === 'Account Opening') return 'Accident & Emergency Triage';
-    if (serviceName === 'Cash Withdrawal') return 'Laboratory & Blood Test';
-    if (serviceName === 'Loan Enquiry') return 'Radiology / X-Ray / Scan';
+  if (category === 'priority' && (serviceName.includes('Consultation') || serviceName.includes('Account'))) {
+    return 'Emergency General Consultation';
   }
   return hospitalServiceNames[serviceName] || serviceName;
 };
@@ -53,12 +49,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   // Filter available department dropdown options based on triage category:
   // Emergency (priority): Accident & Emergency (1), Laboratory (3), Radiology (4)
   // Regular OPD (regular): OPD Doctor (1), Pharmacy (2), Registration & Billing (5)
-  const availableServices = services.filter((s) => {
-    if (customerType === 'priority') {
-      return [1, 3, 4].includes(s.id);
-    }
-    return [1, 2, 5].includes(s.id);
-  });
+  const availableServices = services.length > 0 ? services : [];
 
   // Auto-select first available option when triage category changes
   useEffect(() => {

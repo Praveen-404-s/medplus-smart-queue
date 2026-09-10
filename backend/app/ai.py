@@ -1,17 +1,17 @@
 from datetime import datetime
 
+# Medical Service Consultation Durations (in minutes)
 SERVICE_BASE = {
-    "Account Opening": 18.0,
-    "Cash Deposit": 7.0,
-    "Cash Withdrawal": 8.0,
-    "Loan Enquiry": 20.0,
-    "Document Verification": 12.0,
+    "General Consultation": 15.0,
+    "Radiology": 20.0,
+    "Laboratory Test": 10.0,
 }
 
 CUSTOMER_ADJUSTMENT = {
     "regular": 0.0,
     "senior": 3.0,
     "priority": -1.0,
+    "emergency": -3.0,
 }
 
 def predict_duration(
@@ -20,16 +20,14 @@ def predict_duration(
     when: datetime,
     counter_experience: float = 2.0,
 ) -> float:
-    """Lightweight AI-style prediction used by the Python 3.14 MVP.
+    """Predict consultation duration using hospital department baseline, customer triage category,
 
-    It combines learned/defined service baselines with customer, time,
-    and counter-experience features. Later this function can be replaced
-    by a trained scikit-learn model when using a Python version with a
-    compatible ML wheel.
+    peak time factors, and doctor room experience.
     """
-    base = SERVICE_BASE.get(service_name, 10.0)
+    base = SERVICE_BASE.get(service_name, 15.0)
     customer_adjustment = CUSTOMER_ADJUSTMENT.get(customer_type, 0.0)
 
+    # Peak hour load factor (11am to 2pm)
     peak_adjustment = 2.0 if 11 <= when.hour <= 14 else 0.0
     experience_adjustment = -(float(counter_experience) * 0.8)
 

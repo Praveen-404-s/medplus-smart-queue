@@ -1,26 +1,16 @@
-# Environment & Secrets
+# Secrets & environment
 .env
 
-# Python Virtual Environments
-venv/
-.venv/
-env/
+# Python artifacts
 __pycache__/
 *.pyc
+*.pyo
 
 # Database
 *.db
 *.sqlite
 smart_queue.db
 
-# Machine Learning Artifacts
-*.joblib
-*.pkl
-
-# Node modules (if any legacy dependencies exist)
-node_modules/
-
-# IDE & OS
-.vscode/
-.idea/
-.DS_Store
+# Virtual environments
+venv/
+.venv/
