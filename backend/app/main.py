@@ -73,6 +73,7 @@ def startup():
     finally:
         db.close()
 
+@app.get("/")
 @app.get("/api")
 @app.get("/api/status")
 def root():
