@@ -34,6 +34,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   const cleanDefaultName = currentUser ? currentUser.replace(/\s*\(.*\)/, '').trim() : '';
   const [customerName, setCustomerName] = useState(cleanDefaultName || 'Praveen');
   const [customerType, setCustomerType] = useState<CustomerType>('regular');
+  const [emergencyReason, setEmergencyReason] = useState<string>('Trouble Breathing');
   const [selectedServiceId, setSelectedServiceId] = useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [issuedToken, setIssuedToken] = useState<Token | null>(null);
@@ -68,7 +69,10 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
     }
     setErrorMsg(null);
     setIsSubmitting(true);
-    const finalName = customerName.trim() || cleanDefaultName || 'Walk-in Patient';
+    let finalName = customerName.trim() || cleanDefaultName || 'Walk-in Patient';
+    if (customerType === 'priority' && !finalName.includes('Emergency:')) {
+      finalName = `${finalName} (Emergency: ${emergencyReason})`;
+    }
     try {
       const newTok = await onCreateToken(finalName, customerType, selectedServiceId);
       setIssuedToken(newTok);
@@ -183,6 +187,31 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
                 <span className="chip-sub">Priority Care</span>
               </button>
             </div>
+
+            {customerType === 'priority' && (
+              <div className="emergency-reason-container">
+                <label className="emergency-reason-label">
+                  🚨 Select Emergency Condition
+                </label>
+                <div className="emergency-reason-grid">
+                  {[
+                    { id: 'Trouble Breathing', label: 'Trouble Breathing', icon: '🫁' },
+                    { id: 'Swallowing Poison', label: 'Swallowing Poison', icon: '🧪' },
+                    { id: 'Road Accidents', label: 'Road Accidents', icon: '🚑' },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`emergency-reason-btn ${emergencyReason === item.id ? 'selected' : ''}`}
+                      onClick={() => setEmergencyReason(item.id)}
+                    >
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="form-group">
