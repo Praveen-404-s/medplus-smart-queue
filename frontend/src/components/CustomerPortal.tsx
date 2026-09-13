@@ -60,8 +60,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
         { key: 'breathing', serviceId: 1, label: '🫁 Trouble Breathing (Emergency Triage)', reason: 'Trouble Breathing' },
         { key: 'poison', serviceId: 1, label: '🧪 Swallowing Poison (Emergency Triage)', reason: 'Swallowing Poison' },
         { key: 'road', serviceId: 1, label: '🚑 Road Accidents (Emergency Triage)', reason: 'Road Accidents' },
-        { key: '2', serviceId: 2, label: '🩻 Radiology (Emergency Evaluation)' },
-        { key: '3', serviceId: 3, label: '🧪 Laboratory Test (Emergency Diagnostics)' },
       ];
     }
     return [
