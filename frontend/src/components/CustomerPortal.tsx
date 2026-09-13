@@ -24,6 +24,13 @@ export const getCategoryServiceLabel = (serviceName: string, category: string): 
   return hospitalServiceNames[serviceName] || serviceName;
 };
 
+export interface ServiceOption {
+  key: string;
+  serviceId: number;
+  label: string;
+  reason?: string;
+}
+
 export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   services,
   onCreateToken,
@@ -34,8 +41,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   const cleanDefaultName = currentUser ? currentUser.replace(/\s*\(.*\)/, '').trim() : '';
   const [customerName, setCustomerName] = useState(cleanDefaultName || 'Praveen');
   const [customerType, setCustomerType] = useState<CustomerType>('regular');
-  const [emergencyReason, setEmergencyReason] = useState<string>('Trouble Breathing');
-  const [selectedServiceId, setSelectedServiceId] = useState<number | undefined>(undefined);
+  const [selectedOptionKey, setSelectedOptionKey] = useState<string>('1');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [issuedToken, setIssuedToken] = useState<Token | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -47,34 +53,48 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
     }
   }, [currentUser]);
 
-  // Filter available department dropdown options based on triage category:
-  // Emergency (priority): Accident & Emergency (1), Laboratory (3), Radiology (4)
-  // Regular OPD (regular): OPD Doctor (1), Pharmacy (2), Registration & Billing (5)
-  const availableServices = services.length > 0 ? services : [];
+  // Build Department / Healthcare popup select options based on triage category
+  const dropdownOptions: ServiceOption[] = React.useMemo(() => {
+    if (customerType === 'priority') {
+      return [
+        { key: 'breathing', serviceId: 1, label: '🫁 Trouble Breathing (Emergency Triage)', reason: 'Trouble Breathing' },
+        { key: 'poison', serviceId: 1, label: '🧪 Swallowing Poison (Emergency Triage)', reason: 'Swallowing Poison' },
+        { key: 'road', serviceId: 1, label: '🚑 Road Accidents (Emergency Triage)', reason: 'Road Accidents' },
+        { key: '2', serviceId: 2, label: '🩻 Radiology (Emergency Evaluation)' },
+        { key: '3', serviceId: 3, label: '🧪 Laboratory Test (Emergency Diagnostics)' },
+      ];
+    }
+    return [
+      { key: '1', serviceId: 1, label: 'General Consultation' },
+      { key: '2', serviceId: 2, label: 'Radiology' },
+      { key: '3', serviceId: 3, label: 'Laboratory Test' },
+    ];
+  }, [customerType]);
 
   // Auto-select first available option when triage category changes
   useEffect(() => {
-    if (availableServices.length > 0) {
-      if (!selectedServiceId || !availableServices.some((s) => s.id === selectedServiceId)) {
-        setSelectedServiceId(availableServices[0].id);
+    if (dropdownOptions.length > 0) {
+      if (!dropdownOptions.some((o) => o.key === selectedOptionKey)) {
+        setSelectedOptionKey(dropdownOptions[0].key);
       }
     }
-  }, [customerType, services, selectedServiceId]);
+  }, [customerType, dropdownOptions, selectedOptionKey]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedServiceId) {
+    const selectedOption = dropdownOptions.find((o) => o.key === selectedOptionKey) || dropdownOptions[0];
+    if (!selectedOption) {
       setErrorMsg('Please select a healthcare service');
       return;
     }
     setErrorMsg(null);
     setIsSubmitting(true);
     let finalName = customerName.trim() || cleanDefaultName || 'Walk-in Patient';
-    if (customerType === 'priority' && !finalName.includes('Emergency:')) {
-      finalName = `${finalName} (Emergency: ${emergencyReason})`;
+    if (customerType === 'priority' && selectedOption.reason && !finalName.includes('Emergency:')) {
+      finalName = `${finalName} [Emergency: ${selectedOption.reason}]`;
     }
     try {
-      const newTok = await onCreateToken(finalName, customerType, selectedServiceId);
+      const newTok = await onCreateToken(finalName, customerType, selectedOption.serviceId);
       setIssuedToken(newTok);
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to issue patient token. Please try again.');
@@ -187,31 +207,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
                 <span className="chip-sub">Priority Care</span>
               </button>
             </div>
-
-            {customerType === 'priority' && (
-              <div className="emergency-reason-container">
-                <label className="emergency-reason-label">
-                  🚨 Select Emergency Condition
-                </label>
-                <div className="emergency-reason-grid">
-                  {[
-                    { id: 'Trouble Breathing', label: 'Trouble Breathing', icon: '🫁' },
-                    { id: 'Swallowing Poison', label: 'Swallowing Poison', icon: '🧪' },
-                    { id: 'Road Accidents', label: 'Road Accidents', icon: '🚑' },
-                  ].map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={`emergency-reason-btn ${emergencyReason === item.id ? 'selected' : ''}`}
-                      onClick={() => setEmergencyReason(item.id)}
-                    >
-                      <span>{item.icon}</span>
-                      <span>{item.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="form-group">
@@ -220,20 +215,20 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
               <select
                 id="serviceSelect"
                 className="form-select"
-                value={selectedServiceId || ''}
-                onChange={(e) => setSelectedServiceId(Number(e.target.value))}
+                value={selectedOptionKey}
+                onChange={(e) => setSelectedOptionKey(e.target.value)}
                 required
               >
-                {availableServices.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {getCategoryServiceLabel(s.name, customerType)}
+                {dropdownOptions.map((opt) => (
+                  <option key={opt.key} value={opt.key}>
+                    {opt.label}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          <button type="submit" className="btn-primary get-token-btn" disabled={isSubmitting || availableServices.length === 0}>
+          <button type="submit" className="btn-primary get-token-btn" disabled={isSubmitting || dropdownOptions.length === 0}>
             {isSubmitting ? (
               <>
                 <span className="btn-spinner" /> Registering Patient...
