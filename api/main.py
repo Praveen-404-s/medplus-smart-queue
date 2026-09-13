@@ -17,9 +17,11 @@ class VercelQueryPathMiddleware:
         if scope["type"] in ("http", "websocket"):
             query_string = scope.get("query_string", b"").decode("utf-8")
             qs = parse_qs(query_string)
-            if "__path" in qs and qs["__path"]:
+            if "__path" in qs and qs["__path"] and qs["__path"][0]:
                 clean = qs["__path"][0].split("?")[0]
                 scope["path"] = clean if clean.startswith("/") else ("/" + clean)
+            elif scope.get("path", "").startswith("/api/main"):
+                scope["path"] = "/"
         await self.app(scope, receive, send)
 
 app = VercelQueryPathMiddleware(fastapi_app)
