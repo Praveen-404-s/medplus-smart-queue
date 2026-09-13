@@ -57,9 +57,9 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   const dropdownOptions: ServiceOption[] = React.useMemo(() => {
     if (customerType === 'priority') {
       return [
-        { key: 'breathing', serviceId: 1, label: '🫁 Trouble Breathing (Emergency Triage)', reason: 'Trouble Breathing' },
-        { key: 'poison', serviceId: 1, label: '🧪 Swallowing Poison (Emergency Triage)', reason: 'Swallowing Poison' },
-        { key: 'road', serviceId: 1, label: '🚑 Road Accidents (Emergency Triage)', reason: 'Road Accidents' },
+        { key: 'breathing', serviceId: 1, label: '🫁 Trouble Breathing', reason: 'Trouble Breathing' },
+        { key: 'poison', serviceId: 1, label: '🧪 Swallowing Poison', reason: 'Swallowing Poison' },
+        { key: 'road', serviceId: 1, label: '🚑 Road Accidents', reason: 'Road Accidents' },
       ];
     }
     return [
